@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>GameHub</title>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #f5f4f0; --surface: #ffffff; --surface2: #eeede8;
+      --text: #111110; --text2: #6b6a65; --accent: #2563eb;
+      --accent2: #dbeafe; --border: #e2e1db; --radius: 16px;
+      --shadow: 0 2px 16px rgba(0,0,0,0.07);
+    }
+    body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+    nav { position: sticky; top: 0; z-index: 100; background: rgba(245,244,240,0.85); backdrop-filter: blur(12px); border-bottom: 1px solid var(--border); padding: 0 2rem; height: 64px; display: flex; align-items: center; justify-content: space-between; }
+    .logo { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 1.4rem; color: var(--text); text-decoration: none; }
+    .logo span { color: var(--accent); }
+    .nav-links { display: flex; gap: 0.5rem; }
+    .nav-links a { font-size: 0.9rem; font-weight: 500; color: var(--text2); text-decoration: none; padding: 0.4rem 0.9rem; border-radius: 8px; transition: background 0.15s, color 0.15s; }
+    .nav-links a:hover { background: var(--surface2); color: var(--text); }
+    .nav-links a.active { background: var(--accent); color: #fff; }
+    .hero { max-width: 860px; margin: 0 auto; padding: 5rem 2rem 3rem; text-align: center; }
+    .hero-badge { display: inline-block; background: var(--accent2); color: var(--accent); font-size: 0.8rem; font-weight: 600; padding: 0.3rem 0.9rem; border-radius: 99px; margin-bottom: 1.5rem; text-transform: uppercase; }
+    .hero h1 { font-family: 'Syne', sans-serif; font-size: clamp(2.5rem, 6vw, 4rem); font-weight: 800; letter-spacing: -1.5px; line-height: 1.1; margin-bottom: 1.2rem; }
+    .hero p { color: var(--text2); font-size: 1.1rem; max-width: 480px; margin: 0 auto 2.5rem; line-height: 1.7; }
+    .search-bar { display: flex; max-width: 420px; margin: 0 auto; background: var(--surface); border: 1.5px solid var(--border); border-radius: 12px; overflow: hidden; box-shadow: var(--shadow); }
+    .search-bar input { flex: 1; padding: 0.85rem 1rem; border: none; outline: none; font-family: 'DM Sans', sans-serif; font-size: 0.95rem; background: transparent; color: var(--text); }
+    .search-bar button { padding: 0.85rem 1.2rem; background: var(--accent); color: #fff; border: none; cursor: pointer; font-size: 1rem; }
+    .stats { display: flex; justify-content: center; gap: 2.5rem; padding: 0 2rem 3.5rem; flex-wrap: wrap; }
+    .stat { text-align: center; }
+    .stat-num { font-family: 'Syne', sans-serif; font-size: 1.8rem; font-weight: 800; }
+    .stat-label { font-size: 0.82rem; color: var(--text2); margin-top: 0.1rem; }
+    .section { max-width: 1100px; margin: 0 auto; padding: 0 2rem 4rem; }
+    .section-header { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 1.5rem; }
+    .section-header h2 { font-family: 'Syne', sans-serif; font-size: 1.4rem; font-weight: 700; }
+    .see-all { font-size: 0.85rem; color: var(--accent); text-decoration: none; font-weight: 500; }
+    .game-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 1.2rem; }
+    .game-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; cursor: pointer; transition: transform 0.18s, box-shadow 0.18s, border-color 0.18s; }
+    .game-card:hover { transform: translateY(-4px); box-shadow: 0 12px 32px rgba(0,0,0,0.1); border-color: var(--accent); }
+    .card-thumb { width: 100%; aspect-ratio: 16/10; display: flex; align-items: center; justify-content: center; font-size: 3rem; position: relative; }
+    .card-badge { position: absolute; top: 10px; right: 10px; background: var(--accent); color: #fff; font-size: 0.68rem; font-weight: 700; padding: 0.2rem 0.55rem; border-radius: 99px; text-transform: uppercase; }
+    .card-body { padding: 1rem; }
+    .card-body h3 { font-family: 'Syne', sans-serif; font-size: 1rem; font-weight: 700; margin-bottom: 0.25rem; }
+    .card-meta { display: flex; align-items: center; justify-content: space-between; margin-top: 0.6rem; }
+    .card-cat { font-size: 0.75rem; background: var(--surface2); padding: 0.2rem 0.6rem; border-radius: 6px; color: var(--text2); font-weight: 500; }
+    .card-stars { font-size: 0.8rem; color: #f59e0b; }
+    .card-desc { font-size: 0.82rem; color: var(--text2); line-height: 1.5; }
+    .modal-overlay { display: none; position: fixed; inset: 0; z-index: 999; background: rgba(0,0,0,0.55); backdrop-filter: blur(6px); align-items: center; justify-content: center; padding: 1.5rem; }
+    .modal-overlay.open { display: flex; }
+    .modal { background: var(--surface); border-radius: 20px; width: 100%; max-width: 900px; max-height: 90vh; overflow: hidden; box-shadow: 0 32px 80px rgba(0,0,0,0.2); display: flex; flex-direction: column; animation: slideUp 0.25s ease; }
+    @keyframes slideUp { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: translateY(0); } }
+    .modal-header { display: flex; align-items: center; justify-content: space-between; padding: 1.2rem 1.5rem; border-bottom: 1px solid var(--border); }
+    .modal-title { font-family: 'Syne', sans-serif; font-size: 1.2rem; font-weight: 700; }
+    .modal-close { width: 36px; height: 36px; background: var(--surface2); border: none; border-radius: 8px; cursor: pointer; font-size: 1.1rem; color: var(--text2); display: flex; align-items: center; justify-content: center; }
+    .modal-game { flex: 1; padding: 1.5rem; display: flex; align-items: center; justify-content: center; background: var(--surface2); }
+    .modal-game iframe { width: 100%; height: 520px; border: none; border-radius: 12px; }
+    .modal-placeholder { text-align: center; padding: 4rem 2rem; }
+    .modal-placeholder .big-emoji { font-size: 4rem; margin-bottom: 1rem; }
+    .modal-placeholder h3 { font-family: 'Syne', sans-serif; font-size: 1.3rem; margin-bottom: 0.5rem; }
+    .modal-placeholder p { color: var(--text2); font-size: 0.9rem; line-height: 1.6; }
+    .add-section { max-width: 1100px; margin: 0 auto; padding: 0 2rem 5rem; }
+    .add-card { background: var(--surface); border: 1.5px dashed var(--border); border-radius: var(--radius); padding: 2.5rem; }
+    .add-card h2 { font-family: 'Syne', sans-serif; font-size: 1.3rem; font-weight: 700; margin-bottom: 0.5rem; }
+    .add-card p { color: var(--text2); font-size: 0.9rem; margin-bottom: 2rem; }
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem; }
+    .form-group { display: flex; flex-direction: column; gap: 0.4rem; }
+    .form-group label { font-size: 0.82rem; font-weight: 600; color: var(--text2); }
+    .form-group input, .form-group select, .form-group textarea { padding: 0.75rem 1rem; border: 1.5px solid var(--border); border-radius: 10px; font-family: 'DM Sans', sans-serif; font-size: 0.9rem; background: var(--bg); color: var(--text); outline: none; }
+    .form-submit { background: var(--accent); color: #fff; border: none; padding: 0.8rem 2rem; border-radius: 10px; font-family: 'DM Sans', sans-serif; font-size: 0.95rem; font-weight: 600; cursor: pointer; margin-top: 0.5rem; }
+    footer { border-top: 1px solid var(--border); text-align: center; padding: 2rem; color: var(--text2); font-size: 0.82rem; }
+    footer a { color: var(--accent); text-decoration: none; }
+    .toast { position: fixed; bottom: 2rem; right: 2rem; background: var(--text); color: #fff; padding: 0.85rem 1.5rem; border-radius: 12px; font-size: 0.88rem; font-weight: 500; box-shadow: 0 8px 24px rgba(0,0,0,0.2); opacity: 0; transform: translateY(12px); transition: opacity 0.3s, transform 0.3s; pointer-events: none; z-index: 9999; }
+    .toast.show { opacity: 1; transform: translateY(0); }
+    @media (max-width: 600px) { .form-row { grid-template-columns: 1fr; } .nav-links { display: none; } }
+  </style>
+</head>
+<body>
+<nav>
+  <a class="logo" href="#">Game<span>Hub</span></a>
+  <div class="nav-links">
+    <a href="#" class="active">Alle Spiele</a>
+    <a href="#action">Action</a>
+    <a href="#puzzle">Puzzle</a>
+    <a href="#add">Spiel hinzufügen</a>
+  </div>
+</nav>
+<div class="hero">
+  <div class="hero-badge">🎮 Kostenlos spielen</div>
+  <h1>Dein persönlicher<br/>Game Hub</h1>
+  <p>Alle deine Lieblingsspiele an einem Ort – direkt im Browser, keine Downloads nötig.</p>
+  <div class="search-bar">
+    <input type="text" id="searchInput" placeholder="Spiel suchen…" oninput="filterGames()"/>
+    <button>🔍</button>
+  </div>
+</div>
+<div class="stats">
+  <div class="stat"><div class="stat-num" id="gameCount">7</div><div class="stat-label">Spiele</div></div>
+  <div class="stat"><div class="stat-num">100%</div><div class="stat-label">Kostenlos</div></div>
+  <div class="stat"><div class="stat-num">0</div><div class="stat-label">Downloads</div></div>
+</div>
+<div class="section" id="action">
+  <div class="section-header">
+    <h2>⭐ Beliebt</h2>
+    <a href="#" class="see-all">Alle ansehen →</a>
+  </div>
+  <div class="game-grid" id="gameGrid"></div>
+</div>
+<div class="add-section" id="add">
+  <div class="add-card">
+    <h2>➕ Eigenes Spiel hinzufügen</h2>
+    <p>Füge ein Spiel per iframe-Link oder Embed-URL ein.</p>
+    <div class="form-row">
+      <div class="form-group"><label>Spielname *</label><input type="text" id="newName" placeholder="z.B. Super Platformer"/></div>
+      <div class="form-group"><label>Kategorie</label><select id="newCat"><option>Action</option><option>Puzzle</option><option>Sport</option><option>Strategie</option><option>Retro</option><option>Sonstiges</option></select></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group"><label>Spiel-URL *</label><input type="url" id="newUrl" placeholder="https://…"/></div>
+      <div class="form-group"><label>Emoji Icon</label><input type="text" id="newEmoji" placeholder="🎮" maxlength="4"/></div>
+    </div>
+    <div class="form-group" style="margin-bottom:1rem"><label>Kurzbeschreibung</label><textarea id="newDesc" rows="2" placeholder="Ein kurzer Satz…"></textarea></div>
+    <button class="form-submit" onclick="addGame()">Spiel hinzufügen</button>
+  </div>
+</div>
+<footer>Erstellt mit ❤️ · Hosting auf <a href="https://render.com" target="_blank">Render.com</a> · Komplett kostenlos</footer>
+<div class="modal-overlay" id="modal" onclick="closeModal(event)">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="modal-title" id="modalTitle">Spiel laden…</span>
+      <button class="modal-close" onclick="closeModalBtn()">✕</button>
+    </div>
+    <div class="modal-game" id="modalGame"></div>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+<script>
+  let games = [
+    { id:1, name:'2048', cat:'Puzzle', emoji:'🔢', url:'https://play2048.co/', desc:'Schiebe Kacheln und erreiche 2048!', stars:5, badge:'Beliebt' },
+    { id:2, name:'Tic Tac Toe', cat:'Strategie', emoji:'⭕', url:'', desc:'Klassisches X und O gegen einen Freund.', stars:4, badge:'' },
+    { id:3, name:'Snake', cat:'Retro', emoji:'🐍', url:'https://playsnake.org/', desc:'Frisst Äpfel, werde länger, stirb nicht!', stars:5, badge:'Klassiker' },
+    { id:4, name:'Wordle', cat:'Puzzle', emoji:'🟩', url:'https://wordlegame.org/', desc:'Errate das Wort in 6 Versuchen.', stars:5, badge:'Trending' },
+    { id:5, name:'Chess', cat:'Strategie', emoji:'♟️', url:'https://www.chess.com/play/computer', desc:'Schach gegen den Computer spielen.', stars:4, badge:'' },
+    { id:6, name:'Flappy Bird', cat:'Action', emoji:'🐦', url:'https://flappybird.io/', desc:'Fliege durch die Rohre – so einfach, so schwer.', stars:4, badge:'Action' },
+    { id:7, name:'MCdle', cat:'Puzzle', emoji:'⛏️', url:'/mcdle/', desc:'Errate täglich ein Minecraft Mob, Block oder Item!', stars:5, badge:'Neu' },
+  ];
+  const colors = ['#dbeafe','#dcfce7','#fef9c3','#fce7f3','#ede9fe','#ffedd5'];
+  function renderGames(list) {
+    document.getElementById('gameCount').textContent = games.length;
+    document.getElementById('gameGrid').innerHTML = list.map((g, i) => `
+      <div class="game-card" onclick="openGame(${g.id})">
+        <div class="card-thumb" style="background:${colors[i % colors.length]}">
+          <span>${g.emoji || '🎮'}</span>
+          ${g.badge ? `<span class="card-badge">${g.badge}</span>` : ''}
+        </div>
+        <div class="card-body">
+          <h3>${g.name}</h3>
+          <p class="card-desc">${g.desc}</p>
+          <div class="card-meta">
+            <span class="card-cat">${g.cat}</span>
+            <span class="card-stars">${'★'.repeat(g.stars||4)}${'☆'.repeat(5-(g.stars||4))}</span>
+          </div>
+        </div>
+      </div>`).join('');
+  }
+  function filterGames() {
+    const q = document.getElementById('searchInput').value.toLowerCase();
+    renderGames(games.filter(g => g.name.toLowerCase().includes(q) || g.cat.toLowerCase().includes(q)));
+  }
+  function openGame(id) {
+    const g = games.find(x => x.id === id);
+    if (!g) return;
+    document.getElementById('modalTitle').textContent = g.emoji + ' ' + g.name;
+    const area = document.getElementById('modalGame');
+    if (g.url) {
+      area.innerHTML = `<iframe src="${g.url}" allowfullscreen></iframe>`;
+    } else {
+      area.innerHTML = `<div class="modal-placeholder"><div class="big-emoji">${g.emoji}</div><h3>${g.name}</h3><p>Noch keine URL hinterlegt.</p></div>`;
+    }
+    document.getElementById('modal').classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+  function closeModal(e) { if (e.target === document.getElementById('modal')) closeModalBtn(); }
+  function closeModalBtn() {
+    document.getElementById('modal').classList.remove('open');
+    document.getElementById('modalGame').innerHTML = '';
+    document.body.style.overflow = '';
+  }
+  function addGame() {
+    const name = document.getElementById('newName').value.trim();
+    const url = document.getElementById('newUrl').value.trim();
+    const cat = document.getElementById('newCat').value;
+    const emoji = document.getElementById('newEmoji').value.trim() || '🎮';
+    const desc = document.getElementById('newDesc').value.trim() || 'Ein tolles Spiel!';
+    if (!name) { showToast('❗ Bitte einen Spielnamen eingeben.'); return; }
+    games.push({ id: Date.now(), name, cat, emoji, url, desc, stars: 4, badge: 'Neu' });
+    renderGames(games);
+    document.getElementById('newName').value = '';
+    document.getElementById('newUrl').value = '';
+    document.getElementById('newEmoji').value = '';
+    document.getElementById('newDesc').value = '';
+    showToast('✅ Spiel hinzugefügt!');
+  }
+  function showToast(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = msg; t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 3000);
+  }
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModalBtn(); });
+  renderGames(games);
+</script>
+</body>
+</html>
