@@ -9,11 +9,9 @@ app.use('/gamehub', express.static('public'));
 
 // Flagle Proxy mit Cookie-Banner Entfernung
 app.use('/flagle', createProxyMiddleware({
-  target: 'https://www.flagle-game.com',
+  target: 'https://andydeforest.github.io',
   changeOrigin: true,
-  pathRewrite: { '^/flagle': '' },
-  autoRewrite: true,
-  protocolRewrite: 'https',
+  pathRewrite: { '^/flagle': '/flagle' },
   selfHandleResponse: true,
   on: {
     proxyRes: (proxyRes, req, res) => {
@@ -21,16 +19,14 @@ app.use('/flagle', createProxyMiddleware({
       delete proxyRes.headers['content-security-policy'];
       proxyRes.headers['access-control-allow-origin'] = '*';
 
-      // Redirects abfangen und umschreiben
       if (proxyRes.headers['location']) {
-        const loc = proxyRes.headers['location'];
-        proxyRes.headers['location'] = loc
-          .replace('https://www.flagle-game.com', '/flagle')
-          .replace('http://www.flagle-game.com', '/flagle');
+        proxyRes.headers['location'] = proxyRes.headers['location']
+          .replace('https://andydeforest.github.io/flagle', '/flagle');
       }
 
       const contentType = proxyRes.headers['content-type'] || '';
       const encoding = proxyRes.headers['content-encoding'];
+      const zlib = require('zlib');
 
       if (!contentType.includes('text/html')) {
         res.writeHead(proxyRes.statusCode, proxyRes.headers);
@@ -47,12 +43,10 @@ app.use('/flagle', createProxyMiddleware({
           html = html.replace(/<div[^>]*cookie[^>]*>[\s\S]*?<\/div>/gi, '');
           html = html.replace(/<div[^>]*consent[^>]*>[\s\S]*?<\/div>/gi, '');
           html = html.replace(/<script[^>]*>[\s\S]*?(cookie|consent|gdpr)[\s\S]*?<\/script>/gi, '');
-          html = html.replace(/https:\/\/www\.flagle-game\.com/g, '/flagle');
           delete proxyRes.headers['content-encoding'];
           res.writeHead(proxyRes.statusCode, proxyRes.headers);
           res.end(html);
         };
-        const zlib = require('zlib');
         if (encoding === 'gzip') {
           zlib.gunzip(buf, (err, d) => decode(err ? buf : d));
         } else if (encoding === 'br') {
