@@ -7,9 +7,9 @@ const PORT = process.env.PORT || 3000;
 app.use('/gamehub', express.static('public'));
 
 app.use('/flagle', createProxyMiddleware({
-  target: 'https://flagleunlimited.fun',
+  target: 'https://andydeforest.github.io',
   changeOrigin: true,
-  pathRewrite: { '^/flagle': '' },
+  pathRewrite: { '^/flagle': '/flagle' },
   selfHandleResponse: false,
   on: {
     proxyRes: (proxyRes) => {
