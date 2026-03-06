@@ -10,9 +10,9 @@ app.use('/flagle-static', express.static('public/flagle'));
 
 // Flagle Proxy mit Cookie-Banner Entfernung
 app.use('/flagle', createProxyMiddleware({
-  target: 'https://andydeforest.github.io',
+  target: 'https://www.flagle-game.com/unlimited',
   changeOrigin: true,
-  pathRewrite: { '^/flagle': '/flagle' },
+  pathRewrite: { '^/flagle': '' },
   selfHandleResponse: true,
   on: {
     proxyRes: (proxyRes, req, res) => {
