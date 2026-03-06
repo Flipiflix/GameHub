@@ -11,6 +11,7 @@ app.use('/gamehub', express.static('public'));
 app.use('/flagle', createProxyMiddleware({
   target: 'https://andydeforest.github.io',
   changeOrigin: true,
+  pathRewrite: (path) => path.replace('/flagle', '/flagle'),
   selfHandleResponse: true,
   on: {
     proxyRes: (proxyRes, req, res) => {
