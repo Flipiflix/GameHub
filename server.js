@@ -56,11 +56,7 @@ app.use('/flagle', createProxyMiddleware({
     }
   }
 }));
-```
-
-Nach dem Commit sollten die Logs zeigen:
-```
-[HPM] Proxy created: /flagle -> https://www.flagle-game.com
+com
 
 app.use('/', createProxyMiddleware({
   target: 'https://www.mcdle.net',
