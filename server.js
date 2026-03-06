@@ -9,7 +9,7 @@ app.use('/gamehub', express.static('public'));
 
 // Flagle Proxy mit Cookie-Banner Entfernung
 app.use('/flagle', createProxyMiddleware({
-  target: 'https://www.flagle.io/',
+  target: 'https://flagle-game.com/unlimited',
   changeOrigin: true,
   pathRewrite: (path) => path.replace('/flagle', ''),
   selfHandleResponse: true,
