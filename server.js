@@ -6,7 +6,6 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 app.use('/gamehub', express.static('public'));
-app.use('/flagle-static', express.static('public/flagle'));
 
 // Flagle Proxy mit Cookie-Banner Entfernung
 app.use('/flagle', createProxyMiddleware({
