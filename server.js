@@ -5,7 +5,20 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 app.use('/gamehub', express.static('public'));
-app.use('/flagle', express.static('public/flagle'));
+
+app.use('/flagle', createProxyMiddleware({
+  target: 'https://andydeforest.github.io',
+  changeOrigin: true,
+  pathRewrite: { '^/flagle': '/flagle' },
+  selfHandleResponse: false,
+  on: {
+    proxyRes: (proxyRes) => {
+      delete proxyRes.headers['x-frame-options'];
+      delete proxyRes.headers['content-security-policy'];
+      proxyRes.headers['access-control-allow-origin'] = '*';
+    }
+  }
+}));
 
 app.use('/', createProxyMiddleware({
   target: 'https://www.mcdle.net',
