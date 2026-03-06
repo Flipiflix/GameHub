@@ -7,7 +7,7 @@ const PORT = process.env.PORT || 3000;
 app.use('/gamehub', express.static('public'));
 
 app.use('/flagle', createProxyMiddleware({
-  target: 'https://flagle-game.com',
+  target: 'https://flagle-game.com/unlimited',
   changeOrigin: true,
   pathRewrite: { '^/flagle': '' },
   on: { proxyRes: (proxyRes) => { delete proxyRes.headers['x-frame-options']; delete proxyRes.headers['content-security-policy']; }}
