@@ -6,6 +6,13 @@ const PORT = process.env.PORT || 3000;
 
 app.use('/gamehub', express.static('public'));
 
+app.use('/flagle', createProxyMiddleware({
+  target: 'https://flagle-game.com',
+  changeOrigin: true,
+  pathRewrite: { '^/flagle': '' },
+  on: { proxyRes: (proxyRes) => { delete proxyRes.headers['x-frame-options']; delete proxyRes.headers['content-security-policy']; }}
+}));
+
 app.use('/', createProxyMiddleware({
   target: 'https://www.mcdle.net',
   changeOrigin: true,
@@ -17,13 +24,6 @@ app.use('/', createProxyMiddleware({
       proxyRes.headers['access-control-allow-origin'] = '*';
     }
   }
-}));
-
-app.use('/flagle', createProxyMiddleware({
-  target: 'https://flagle-game.com',
-  changeOrigin: true,
-  pathRewrite: { '^/flagle': '' },
-  on: { proxyRes: (proxyRes) => { delete proxyRes.headers['x-frame-options']; delete proxyRes.headers['content-security-policy']; }}
 }));
 
 app.listen(PORT, () => {
