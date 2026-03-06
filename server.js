@@ -5,6 +5,7 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 app.use('/gamehub', express.static('public'));
+app.use('/flagle', express.static('public/flagle'));
 
 app.use('/', createProxyMiddleware({
   target: 'https://www.mcdle.net',
