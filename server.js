@@ -10,7 +10,8 @@ app.use('/gamehub', express.static('public'));
 app.use('/flagle', createProxyMiddleware({
   target: 'https://www.flagle-game.com',
   changeOrigin: true,
-  pathRewrite: { '^/flagle': '/' },
+  followRedirects: true,
+  pathRewrite: { '^/flagle': '' },
   selfHandleResponse: true,
   onProxyRes: (proxyRes, req, res) => {
     delete proxyRes.headers['x-frame-options'];
