@@ -19,6 +19,13 @@ app.use('/', createProxyMiddleware({
   }
 }));
 
+app.use('/flagle', createProxyMiddleware({
+  target: 'https://flagle-game.com',
+  changeOrigin: true,
+  pathRewrite: { '^/flagle': '' },
+  on: { proxyRes: (proxyRes) => { delete proxyRes.headers['x-frame-options']; delete proxyRes.headers['content-security-policy']; }}
+}));
+
 app.listen(PORT, () => {
   console.log('Server läuft auf Port ' + PORT);
 });
