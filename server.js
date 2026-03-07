@@ -8,24 +8,16 @@ const PORT = process.env.PORT || 3000;
 app.use('/gamehub', express.static('public'));
 
 app.use('/flagle', createProxyMiddleware({
-  target: 'https://www.flaggle.net',
+  target: 'https://www.flagle-game.com',
   changeOrigin: true,
   pathRewrite: { '^/flagle': '' },
   selfHandleResponse: false,
   autoRewrite: true,
   cookieDomainRewrite: '',
-  on: {
-    proxyRes: (proxyRes) => {
-      delete proxyRes.headers['x-frame-options'];
-      delete proxyRes.headers['content-security-policy'];
-      proxyRes.headers['access-control-allow-origin'] = '*';
-
-      if (proxyRes.headers['location']) {
-        proxyRes.headers['location'] = proxyRes.headers['location']
-          .replace('https://www.flagle-game.com', '')
-          .replace('http://www.flagle-game.com', '');
-      }
-    }
+  onproxyRes: (proxyRes) => {
+    delete proxyRes.headers['x-frame-options'];
+    delete proxyRes.headers['content-security-policy'];
+    proxyRes.headers['access-control-allow-origin'] = '*';
   }
 }));
 
