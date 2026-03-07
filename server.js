@@ -11,10 +11,14 @@ app.use('/flagle', createProxyMiddleware({
   target: 'https://www.flaggle.net',
   changeOrigin: true,
   selfHandleResponse: false,
-  onproxyRes: (proxyRes) => {
+  onProxyRes: (proxyRes) => {
     delete proxyRes.headers['x-frame-options'];
     delete proxyRes.headers['content-security-policy'];
     proxyRes.headers['access-control-allow-origin'] = '*';
+  },
+  onProxyReq: (proxyReq) => {
+    proxyReq.setHeader('Referer', 'https://www.flaggle.net');
+    proxyReq.setHeader('Origin', 'https://www.flaggle.net');
   }
 }));
 
