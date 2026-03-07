@@ -56,7 +56,6 @@ app.use('/flagle', createProxyMiddleware({
     }
   }
 }));
-com
 
 app.use('/', createProxyMiddleware({
   target: 'https://www.mcdle.net',
